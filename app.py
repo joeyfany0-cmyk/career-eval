@@ -4,7 +4,10 @@ from fpdf import FPDF
 import time
 
 # --- 1. 配置 AI 客户端 (以 DeepSeek 为例) ---
-client = OpenAI(api_key="你的_DEEPSEEK_API_KEY", base_url="https://api.deepseek.com")
+client = OpenAI(
+    api_key = st.secrets["DEEPSEEK_API_KEY"], 
+    base_url = "https://api.deepseek.com"
+)
 
 
 # --- 2. PDF 生成类 (支持中文) ---
