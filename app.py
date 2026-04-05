@@ -91,7 +91,11 @@ if submit:
     # 模拟支付环节
     st.markdown("### 🔓 获取完整 10 页 PDF 报告")
     st.write("请扫码支付 **0.1 元** 咨询费，支付后即可激活下载。")
-    st.image("https://via.placeholder.com/200x200.png?text=QR+CODE")  # 替换为你的真实收款码
+    st.image("pay_qr.png", caption="微信/支付宝扫码支付", width=300)
+
+if st.button("我已支付，开始生成报告"):
+    # 这里放生成 PDF 的逻辑
+    st.write("正在为您生成深度报告，请稍候...")
 
     # 在实际运营中，这里需要支付回调。原型阶段我们直接提供生成按钮。
     if st.button("我已支付，立即生成 PDF 报告"):
