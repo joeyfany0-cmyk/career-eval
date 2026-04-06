@@ -56,7 +56,7 @@ def generate_pdf(report_sections):
         pdf.multi_cell(0, 8, content)
         pdf.ln(5)
 
-    return pdf.output(dest='S').encode('latin-1')
+    return pdf.output()
 
 # --- 3. 状态初始化 ---
 if 'report_ready' not in st.session_state:
@@ -140,12 +140,16 @@ if not st.session_state.report_ready:
 if st.session_state.report_ready and st.session_state.report_data:
     st.balloons()
     try:
-        pdf_bytes = generate_pdf(st.session_state.report_data)
+        # 1. 生成 PDF 数据
+        pdf_data = generate_pdf(st.session_state.report_data)
+        
+        # 2. 这里的 pdf_data 现在已经是二进制格式了
         st.download_button(
             label="📥 下载您的 10 页深度评估报告 (PDF)",
-            data=pdf_bytes,
+            data=pdf_data, # 直接传入
             file_name=f"轨交转型报告_{major}.pdf",
             mime="application/pdf"
         )
     except Exception as e:
-        st.error(f"PDF 渲染失败（通常是字体文件 simsun.ttf 缺失）：{e}")
+        # 如果还有错，这行会告诉你具体的错误
+        st.error(f"PDF 渲染失败：{e}")
