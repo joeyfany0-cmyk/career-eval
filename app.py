@@ -34,6 +34,8 @@ class CareerPDF(FPDF):
 def generate_pdf(report_sections):
     pdf = CareerPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
+    
+    # 加载中文字体
     font_path = os.path.join(os.path.dirname(__file__), "simsun.ttf")
     pdf.add_font('Chinese', '', font_path, uni=True)
 
@@ -56,6 +58,7 @@ def generate_pdf(report_sections):
         pdf.multi_cell(0, 8, content)
         pdf.ln(5)
 
+    # fpdf2 的 output() 默认返回 bytearray
     return pdf.output()
 
 # --- 3. 状态初始化 ---
@@ -80,7 +83,7 @@ with st.form("user_data"):
         personality = st.text_input("性格标签", "严谨")
         hobby = st.text_input("兴趣爱好", "数码、摄影")
 
-    exp = st.text_area("主要项目经验 (建议 200 字以上)")
+    exp = st.text_area("主要项目经验 (建议输入 200 字以上)")
     submit_base = st.form_submit_button("开始评估")
 
 # --- 5. 逻辑处理 ---
@@ -140,16 +143,17 @@ if not st.session_state.report_ready:
 if st.session_state.report_ready and st.session_state.report_data:
     st.balloons()
     try:
-        # 1. 生成 PDF 数据
-        pdf_data = generate_pdf(st.session_state.report_data)
+        # 1. 生成 PDF 数据 (此时是 bytearray)
+        pdf_raw = generate_pdf(st.session_state.report_data)
         
-        # 2. 这里的 pdf_data 现在已经是二进制格式了
+        # 2. 【核心修复】将 bytearray 转换为 bytes 格式，Streamlit 才能识别
+        pdf_final = bytes(pdf_raw)
+        
         st.download_button(
             label="📥 下载您的 10 页深度评估报告 (PDF)",
-            data=pdf_data, # 直接传入
+            data=pdf_final, 
             file_name=f"轨交转型报告_{major}.pdf",
             mime="application/pdf"
         )
     except Exception as e:
-        # 如果还有错，这行会告诉你具体的错误
         st.error(f"PDF 渲染失败：{e}")
